@@ -1,198 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Site</title>
+    <script src="path/to/firebase.js"></script>
+    <script>
+        // Your Firebase configuration here
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
 
-<style>
-body{
-    margin:0;
-    font-family: Arial;
-    background-color:#0f1c24;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
-
-.container{
-    width:90%;
-    max-width:350px;
-}
-
-h2{
-    text-align:center;
-    color:white;
-    margin-bottom:30px;
-}
-
-input{
-    width:100%;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:12px;
-    border:1px solid #2c3e50;
-    background-color:#1c2b36;
-    color:white;
-    font-size:16px;
-}
-
-button{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:25px;
-    font-size:16px;
-    cursor:pointer;
-}
-
-.btn-login{
-    background-color:#1877f2;
-    color:white;
-}
-
-.btn-admin{
-    margin-top:30px;
-    border:2px solid #1877f2;
-    background:transparent;
-    color:#1877f2;
-}
-
-.painel{
-    display:none;
-    color:white;
-    text-align:center;
-    max-height:300px;
-    overflow:auto;
-}
-</style>
+        // Function to delete all data
+        function deleteAllData() {
+            const db = firebase.firestore();
+            db.collection('your_collection_name').get().then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    db.collection('your_collection_name').doc(doc.id).delete();
+                });
+                alert('All data deleted successfully!');
+            }).catch((error) => {
+                console.error('Error deleting documents: ', error);
+            });
+        }
+    </script>
 </head>
-
 <body>
-
-<!-- TELA USUÁRIO -->
-<div class="container" id="loginTela">
-
-<h2>Entrar</h2>
-
-<input type="text" id="usuarioNome" placeholder="Nome de usuário">
-<input type="password" id="usuarioSenha" placeholder="Senha">
-
-<button class="btn-login" onclick="entrarUsuario()">Entrar</button>
-<button class="btn-admin" onclick="mostrarAdminLogin()">Administrador</button>
-
-</div>
-
-<!-- LOGIN ADMIN -->
-<div class="container painel" id="adminLoginTela">
-
-<h2>Login Administrador</h2>
-
-<input type="text" id="adminUser" placeholder="Usuário Admin">
-<input type="password" id="adminPass" placeholder="Senha Admin">
-
-<button class="btn-login" onclick="entrarAdmin()">Entrar como Admin</button>
-<button class="btn-admin" onclick="voltar()">Voltar</button>
-
-</div>
-
-<!-- PAINEL ADMIN -->
-<div class="container painel" id="adminPainel">
-
-<h2>Painel do Administrador</h2>
-
-<p id="mensagemAdmin"></p>
-
-<button class="btn-login" onclick="voltar()">Sair</button>
-
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// 🔥 CONFIG DO SEU PROJETO
-const firebaseConfig = {
-  apiKey: "AIzaSyCCjGhpNT8ZYR4vwO5zCsiht67E_G-EDFQ",
-  authDomain: "meu-site-bfad1.firebaseapp.com",
-  projectId: "meu-site-bfad1",
-  storageBucket: "meu-site-bfad1.firebasestorage.app",
-  messagingSenderId: "732673574881",
-  appId: "1:732673574881:web:2f03c4f9471df962d674a0",
-  measurementId: "G-FE60T3PDQZ"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// MOSTRAR LOGIN ADMIN
-window.mostrarAdminLogin = function(){
-    document.getElementById("loginTela").style.display = "none";
-    document.getElementById("adminLoginTela").style.display = "block";
-}
-
-// VOLTAR
-window.voltar = function(){
-    document.getElementById("loginTela").style.display = "block";
-    document.getElementById("adminLoginTela").style.display = "none";
-    document.getElementById("adminPainel").style.display = "none";
-}
-
-// LOGIN USUÁRIO
-window.entrarUsuario = async function(){
-
-    const nome = document.getElementById("usuarioNome").value;
-    const senha = document.getElementById("usuarioSenha").value;
-
-    if(nome === "" || senha === ""){
-        alert("Preencha todos os campos!");
-        return;
-    }
-
-    await addDoc(collection(db, "logins"), {
-        usuario: nome,
-        senha: senha,
-        data: new Date()
-    });
-
-    alert("Login registrado com sucesso!");
-}
-
-// LOGIN ADMIN
-window.entrarAdmin = async function(){
-
-    const user = document.getElementById("adminUser").value;
-    const pass = document.getElementById("adminPass").value;
-
-    if(user === "rafael" && pass === "1234"){
-
-        document.getElementById("adminLoginTela").style.display = "none";
-        document.getElementById("adminPainel").style.display = "block";
-
-        const querySnapshot = await getDocs(collection(db, "logins"));
-
-        let resultado = "";
-
-        querySnapshot.forEach((doc) => {
-            const dados = doc.data();
-            resultado += `
-                <hr>
-                Usuário: ${dados.usuario} <br>
-                Senha: ${dados.senha} <br>
-                Data: ${dados.data.toDate()}
-            `;
-        });
-
-        document.getElementById("mensagemAdmin").innerHTML = resultado;
-
-    } else {
-        alert("Usuário ou senha de administrador incorretos!");
-    }
-}
-
-</script>
-
+    <h1>Welcome to Meu Site</h1>
+    <div id="admin-panel">
+        <button onclick="deleteAllData()">Delete All Data</button>
+    </div>
 </body>
 </html>
