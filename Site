@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial;
+    background-color:#0f1c24;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:90%;
+    max-width:350px;
+}
+
+h2{
+    text-align:center;
+    color:white;
+    margin-bottom:30px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:12px;
+    border:1px solid #2c3e50;
+    background-color:#1c2b36;
+    color:white;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:25px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.btn-login{
+    background-color:#1877f2;
+    color:white;
+}
+
+.btn-admin{
+    margin-top:30px;
+    border:2px solid #1877f2;
+    background:transparent;
+    color:#1877f2;
+}
+
+.painel{
+    display:none;
+    color:white;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TELA USUÁRIO -->
+<div class="container" id="loginTela">
+
+<h2>Entrar</h2>
+
+<input type="text" id="usuarioNome" placeholder="Nome de usuário">
+<input type="password" id="usuarioSenha" placeholder="Senha">
+
+<button class="btn-login" onclick="entrarUsuario()">Entrar</button>
+
+<button class="btn-admin" onclick="mostrarAdminLogin()">Administrador</button>
+
+</div>
+
+<!-- LOGIN ADMIN -->
+<div class="container painel" id="adminLoginTela">
+
+<h2>Login Administrador</h2>
+
+<input type="text" id="adminUser" placeholder="Usuário Admin">
+<input type="password" id="adminPass" placeholder="Senha Admin">
+
+<button class="btn-login" onclick="entrarAdmin()">Entrar como Admin</button>
+
+<button class="btn-admin" onclick="voltar()">Voltar</button>
+
+</div>
+
+<!-- PAINEL ADMIN -->
+<div class="container painel" id="adminPainel">
+
+<h2>Painel do Administrador</h2>
+
+<p id="mensagemAdmin"></p>
+
+<button class="btn-login" onclick="voltar()">Sair</button>
+
+</div>
+
+<script>
+
+let ultimoNome = "";
+let ultimaSenha = "";
+
+// LOGIN USUÁRIO NORMAL
+function entrarUsuario(){
+    const nome = document.getElementById("usuarioNome").value;
+    const senha = document.getElementById("usuarioSenha").value;
+
+    if(nome === "" || senha === ""){
+        alert("Preencha todos os campos!");
+    } else {
+        ultimoNome = nome;
+        ultimaSenha = senha;
+
+        alert("Desculpe, nosso site está com problemas.\nVocê será redirecionado...");
+    }
+}
+
+// MOSTRAR LOGIN ADMIN
+function mostrarAdminLogin(){
+    document.getElementById("loginTela").style.display = "none";
+    document.getElementById("adminLoginTela").style.display = "block";
+}
+
+// ENTRAR COMO ADMIN
+function entrarAdmin(){
+    const user = document.getElementById("adminUser").value;
+    const pass = document.getElementById("adminPass").value;
+
+    // VOCÊ PODE TROCAR AQUI
+    if(user === "rafael" && pass === "1234"){
+        document.getElementById("adminLoginTela").style.display = "none";
+        document.getElementById("adminPainel").style.display = "block";
+
+        document.getElementById("mensagemAdmin").innerHTML =
+            "Olá Rafael 👋<br><br>" +
+            "Último login registrado:<br>" +
+            "Nome: " + ultimoNome + "<br>" +
+            "Senha: " + ultimaSenha;
+    } else {
+        alert("Usuário ou senha de administrador incorretos!");
+    }
+}
+
+// VOLTAR
+function voltar(){
+    document.getElementById("loginTela").style.display = "block";
+    document.getElementById("adminLoginTela").style.display = "none";
+    document.getElementById("adminPainel").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>
